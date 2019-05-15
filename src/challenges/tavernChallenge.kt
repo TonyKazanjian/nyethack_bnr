@@ -11,6 +11,7 @@ const val tavernName = "Taevyrn's Folly"
 
 val menuList = File("data/tavern-menu-data.txt").readText().split("\n")
 var MENU_CHAR_LENGTH = 30
+val itemTypeSet = mutableSetOf<String>()
 fun main(args: Array<String>) {
     formatMenu(menuList)
 }
@@ -20,7 +21,9 @@ fun formatMenu(menuList: List<String>){
     println()
     for (item in menuList){
         val menuItem = removeTypeAndComma(item)
-        println(formattedMenuItem(menuItem))
+//        println(formattedMenuItem(menuItem))
+        val itemSet = getFullMenuItem(item)
+        println(getItemTypeSet(itemSet))
     }
 }
 
@@ -30,21 +33,11 @@ fun removeTypeAndComma(menuItem : String) : List<String> {
     return itemSet
 }
 
-fun getFullMenuItem(menuItem: String) : Set<String> {
+fun getFullMenuItem(menuItem: String) : List<String> {
     val (type, name, price) = menuItem.split(',')
     val capName = name.capitalize()
-    val itemSet = mutableSetOf<String>(type, capName, price)
-//    createDrinkCategory(type, itemSet)
+    val itemSet = mutableListOf<String>(type, capName, price)
     return itemSet
-}
-
-fun sortDrinksIntoCategories(drinkType : String, menuItem : Set<String>, menuList : List<String>) : Set<String> {
-
-    val itemTypeSet = mutableSetOf<String>()
-    if (menuItem.contains(drinkType)){
-        itemTypeSet.addAll(menuItem)
-    }
-    return itemTypeSet;
 }
 
 fun formattedMenuItem(menuItem : List<String>) : String{
@@ -58,5 +51,25 @@ fun formattedMenuItem(menuItem : List<String>) : String{
     stringBuider.append(price)
     return  stringBuider.toString()
 }
+
+fun getItemTypeSet(menuItem: List<String>) : Set<String> {
+    (0..menuItem.size).forEach {
+        val type = menuItem.first()
+        val itemType = "~$type~"
+        itemTypeSet.add(itemType)
+    }
+    return itemTypeSet
+}
+
+
+fun sortDrinksIntoCategories(drinkType : String, menuItem : Set<String>, menuList : List<String>) : Set<String> {
+
+    val itemTypeSet = mutableSetOf<String>()
+    if (menuItem.contains(drinkType)){
+        itemTypeSet.addAll(menuItem)
+    }
+    return itemTypeSet;
+}
+
 
 
