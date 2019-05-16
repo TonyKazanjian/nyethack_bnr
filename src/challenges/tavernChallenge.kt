@@ -1,5 +1,6 @@
 package challenges
 import java.io.File
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.experimental.buildIterator
 
 /**
@@ -76,17 +77,20 @@ fun getCategorySet(menuItems : List<String>) : Set<String> {
 fun sortDrinksToCategory(categorySet : Set<String>, menuItemList : MutableList<String>) : String {
     val stringBuider = StringBuilder()
     (0..categorySet.size - 1).forEach {
-        for (item in menuItemList){
+        val iterator = menuItemList.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
             val type = categorySet.elementAt(it)
-            if (getFullMenuItem(item).contains(type)){
+            if (getFullMenuItem(item).contains(type)) {
                 val typeString = "~$type~\n"
                 stringBuider.append(typeString)
-                stringBuider.append(formattedMenuItem(removeTypeAndComma(menuItemList[it]))+"\n")
-            }
+                stringBuider.append(formattedMenuItem(removeTypeAndComma(item)) + "\n")
+                iterator.remove()
 
+            }
         }
     }
-    return stringBuider.toString()
+        return stringBuider.toString()
 }
 
 
