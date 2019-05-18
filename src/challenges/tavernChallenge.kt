@@ -56,19 +56,17 @@ fun formattedMenuItem(menuItem : List<String>) : String{
     return  stringBuider.toString()
 }
 
-
-
-fun getCategoryFromMenuItem(menuItem : String) : String{
-    val (type, name, price) = menuItem.split(',')
-    return type
-}
-
 fun getCategorySet(menuItems : List<String>) : Set<String> {
     val categories = mutableSetOf<String>()
     for (item in menuFile){
         categories.add(getCategoryFromMenuItem(item))
     }
     return categories
+}
+
+fun getCategoryFromMenuItem(menuItem : String) : String{
+    val (type, name, price) = menuItem.split(',')
+    return type
 }
 
 /**
@@ -82,8 +80,10 @@ fun sortDrinksToCategory(categorySet : Set<String>, menuItemList : MutableList<S
             val item = iterator.next()
             val type = categorySet.elementAt(it)
             if (getFullMenuItem(item).contains(type)) {
-                val typeString = "~$type~\n"
-                stringBuider.append(typeString)
+                val typeString = "        ~[$type~]\n"
+                if (!stringBuider.contains(typeString)){
+                    stringBuider.append(typeString)
+                }
                 stringBuider.append(formattedMenuItem(removeTypeAndComma(item)) + "\n")
                 iterator.remove()
 
