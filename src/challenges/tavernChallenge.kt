@@ -1,6 +1,7 @@
 package challenges
 import java.io.File
-import kotlin.math.roundToInt
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.coroutines.experimental.buildIterator
 
 /**
  * Created by tonykazanjian on 2/2/19.
@@ -9,19 +10,22 @@ import kotlin.math.roundToInt
 const val tavernName = "Taevyrn's Folly"
 
 
-val menuList = File("data/tavern-menu-data.txt").readText().split("\n")
+val menuFile = File("data/tavern-menu-data.txt").readText().split("\n")
 var MENU_CHAR_LENGTH = 30
+val itemTypeSet = mutableSetOf<String>()
 fun main(args: Array<String>) {
-    formatMenu(menuList)
+    formatMenu(menuFile)
 }
 
 fun formatMenu(menuList: List<String>){
     println("*** Welome to Taevyrn's Folly! ***")
     println()
-    for (item in menuList){
-        val menuItem = removeTypeAndComma(item)
-        println(formattedMenuItem(menuItem))
+    val fullMenu = mutableListOf<String>()
+    val categorySet = getCategorySet(menuList)
+    for (item in menuFile){
+        fullMenu.add(item)
     }
+    println(sortDrinksToCategory(categorySet, fullMenu))
 }
 
 fun removeTypeAndComma(menuItem : String) : List<String> {
@@ -30,21 +34,14 @@ fun removeTypeAndComma(menuItem : String) : List<String> {
     return itemSet
 }
 
-fun getFullMenuItem(menuItem: String) : Set<String> {
+/**
+ * Returns a list of strings that contains the full menu item
+ */
+fun getFullMenuItem(menuItem: String) : List<String> {
     val (type, name, price) = menuItem.split(',')
     val capName = name.capitalize()
-    val itemSet = mutableSetOf<String>(type, capName, price)
-//    createDrinkCategory(type, itemSet)
-    return itemSet
-}
-
-fun sortDrinksIntoCategories(drinkType : String, menuItem : Set<String>, menuList : List<String>) : Set<String> {
-
-    val itemTypeSet = mutableSetOf<String>()
-    if (menuItem.contains(drinkType)){
-        itemTypeSet.addAll(menuItem)
-    }
-    return itemTypeSet;
+    val itemList = mutableListOf<String>(type, capName, price)
+    return itemList
 }
 
 fun formattedMenuItem(menuItem : List<String>) : String{
@@ -58,5 +55,43 @@ fun formattedMenuItem(menuItem : List<String>) : String{
     stringBuider.append(price)
     return  stringBuider.toString()
 }
+
+fun getCategorySet(menuItems : List<String>) : Set<String> {
+    val categories = mutableSetOf<String>()
+    for (item in menuFile){
+        categories.add(getCategoryFromMenuItem(item))
+    }
+    return categories
+}
+
+fun getCategoryFromMenuItem(menuItem : String) : String{
+    val (type, name, price) = menuItem.split(',')
+    return type
+}
+
+/**
+ * Checks if full menu items belong in a drink category
+ */
+fun sortDrinksToCategory(categorySet : Set<String>, menuItemList : MutableList<String>) : String {
+    val stringBuider = StringBuilder()
+    (0..categorySet.size - 1).forEach {
+        val iterator = menuItemList.iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
+            val type = categorySet.elementAt(it)
+            if (getFullMenuItem(item).contains(type)) {
+                val typeString = "        ~[$type~]\n"
+                if (!stringBuider.contains(typeString)){
+                    stringBuider.append(typeString)
+                }
+                stringBuider.append(formattedMenuItem(removeTypeAndComma(item)) + "\n")
+                iterator.remove()
+
+            }
+        }
+    }
+        return stringBuider.toString()
+}
+
 
 
