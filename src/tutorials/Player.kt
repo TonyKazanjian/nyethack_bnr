@@ -1,18 +1,38 @@
 package tutorials
 
+import java.io.File
+
 /**
  * Created by tonykazanjian on 5/21/19.
  */
-class Player {
-    var name = "madrigal"
-    get() = field.capitalize()
-    private set(value) {
-        field = value.trim()
+class Player (_name: String, var healthPoints: Int = 100,
+              var isBlessed: Boolean,
+              private val isImmortal: Boolean) {
+    var name = _name
+        get() = "${field.capitalize()} of $hometown"
+        private set(value) {
+            field = value.trim()
+        }
+
+    val hometown by lazy { selectHometown()}
+
+    init {
+        require(healthPoints > 0, {"healthPoints must be greater than zero."})
+        require(name.isNotBlank(), {"Player must have a name."})
     }
 
-    var healthPoints = 89
-    val isBlessed = true
-    private val isImmortal = false
+    constructor(name: String) : this(name,
+            isBlessed = true,
+            isImmortal = false) {
+        if (name.toLowerCase() == "kar") healthPoints = 40
+    }
+
+    private fun selectHometown() = File("data/towns.txt")
+            .readText()
+            .split("\n")
+            .shuffled()
+            .first()
+
 
     fun castFireball(numFireballs: Int){
 

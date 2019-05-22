@@ -5,7 +5,7 @@ package tutorials
  */
 
 fun main(args: Array<String>) {
-    val player = Player()
+    val player = Player("Kar")
     player.castFireball(2)
 
     val auraColor = player.auraColor()
