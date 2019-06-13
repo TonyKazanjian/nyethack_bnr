@@ -5,10 +5,14 @@ package tutorials
  */
 
 fun main(args: Array<String>) {
-    val player = Player("Kar")
+    val player = Player("Tony")
     player.castFireball(2)
 
     val auraColor = player.auraColor()
+
+    var currentRoom = TownSquare()
+    println(currentRoom.description())
+    println(currentRoom.load())
 
     printPlayerStatus(player)
 
