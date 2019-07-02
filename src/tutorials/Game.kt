@@ -16,10 +16,12 @@ object Game {
     var inSession = true
     val player = Player("Tony")
     var currentRoom: Room =  TownSquare()
+    val topRoomList = listOf<Room>(currentRoom, Room("Tavern"), Room("Back Room"))
+    val bottomRoomList = listOf<Room>(Room("Long Corridor"), Room ("Generic Room"))
 
     private var worldMap = listOf(
-            listOf(currentRoom, Room("Tavern"), Room("Back Room")),
-            listOf(Room("Long Corridor"), Room("Generic Room")))
+            topRoomList,
+            bottomRoomList)
 
     private fun quitGame() : String {
         inSession = false;
@@ -76,6 +78,7 @@ object Game {
 
         fun processCommand() = when (command.toLowerCase()) {
             "move" -> move(argument)
+            "map" -> displayMap()
             "quit" -> quitGame()
             "ring" -> ringTownSquareBell(currentRoom)
             else -> commandNotFound()
@@ -92,5 +95,25 @@ object Game {
         } else {
             return "The bell's not here!"
         }
+    }
+
+    private fun displayMap() : String {
+        val topRoomMap = buildRoomMap(topRoomList)
+        val bottomRoomMap = buildRoomMap(bottomRoomList)
+        val fullMap = "$topRoomMap\n$bottomRoomMap"
+        return fullMap;
+
+    }
+
+    private fun buildRoomMap(roomList : List<Room>) : String{
+        val roomStringBuilder = StringBuilder()
+        roomList.forEach { room ->
+            if (currentRoom.name.equals(room.name)){
+                roomStringBuilder.append("X ")
+            } else {
+                roomStringBuilder.append("O ")
+            }
+        }
+        return roomStringBuilder.toString()
     }
 }
