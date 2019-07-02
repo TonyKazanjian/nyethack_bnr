@@ -77,10 +77,20 @@ object Game {
         fun processCommand() = when (command.toLowerCase()) {
             "move" -> move(argument)
             "quit" -> quitGame()
+            "ring" -> ringTownSquareBell(currentRoom)
             else -> commandNotFound()
         }
 
 
         private fun commandNotFound() = "I'm not quite sure what you're trying to do!"
+    }
+
+    private fun ringTownSquareBell(currentRoom: Room): String {
+
+        if (currentRoom is TownSquare){
+           return currentRoom.ringBell();
+        } else {
+            return "The bell's not here!"
+        }
     }
 }
