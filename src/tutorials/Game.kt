@@ -13,12 +13,19 @@ fun main(args: Array<String>) {
 
 object Game {
 
+    var inSession = true
     val player = Player("Tony")
     var currentRoom: Room =  TownSquare()
 
     private var worldMap = listOf(
             listOf(currentRoom, Room("Tavern"), Room("Back Room")),
             listOf(Room("Long Corridor"), Room("Generic Room")))
+
+    private fun quitGame() : String {
+        inSession = false;
+        return "You've quit the game"
+
+    }
 
     private fun move(directionInput: String) =
             try {
@@ -44,7 +51,7 @@ object Game {
     }
 
     fun play(){
-        while(true){
+        while(inSession){
             // Play NyetHack
             println(currentRoom.description())
             println(currentRoom.load())
@@ -69,6 +76,7 @@ object Game {
 
         fun processCommand() = when (command.toLowerCase()) {
             "move" -> move(argument)
+            "quit" -> quitGame()
             else -> commandNotFound()
         }
 
