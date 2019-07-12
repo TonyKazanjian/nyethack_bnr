@@ -1,5 +1,7 @@
 package tutorials
 
+import challenges.GameMap
+
 /**
  * Created by tonykazanjian on 2/2/19.
  */
@@ -13,12 +15,20 @@ fun main(args: Array<String>) {
 
 object Game {
 
+    var inSession = true
     val player = Player("Tony")
-    var currentRoom: Room =  TownSquare()
+    val gameMap = GameMap()
+    var currentRoom: Room
 
-    private var worldMap = listOf(
-            listOf(currentRoom, Room("Tavern"), Room("Back Room")),
-            listOf(Room("Long Corridor"), Room("Generic Room")))
+    init {
+        currentRoom = gameMap.currentRoom
+    }
+
+    private fun quitGame() : String {
+        inSession = false;
+        return "You've quit the game"
+
+    }
 
     private fun move(directionInput: String) =
             try {
@@ -28,7 +38,7 @@ object Game {
                     throw IllegalStateException("$direction is out of bounds.")
                 }
 
-                val newRoom = worldMap[newPosition.y][newPosition.x]
+                val newRoom = gameMap.worldMap[newPosition.y][newPosition.x]
                 player.currentPosition = newPosition
                 currentRoom = newRoom
                 "Ok, you move $direction to the ${newRoom.name}.\n${newRoom.load()}"
@@ -44,7 +54,7 @@ object Game {
     }
 
     fun play(){
-        while(true){
+        while(inSession){
             // Play NyetHack
             println(currentRoom.description())
             println(currentRoom.load())
@@ -69,10 +79,42 @@ object Game {
 
         fun processCommand() = when (command.toLowerCase()) {
             "move" -> move(argument)
+            "map" -> displayMap()
+            "quit" -> quitGame()
+            "ring" -> ringTownSquareBell(currentRoom)
             else -> commandNotFound()
         }
 
 
         private fun commandNotFound() = "I'm not quite sure what you're trying to do!"
+    }
+
+    private fun ringTownSquareBell(currentRoom: Room): String {
+
+        if (currentRoom is TownSquare){
+           return currentRoom.ringBell();
+        } else {
+            return "The bell's not here!"
+        }
+    }
+
+    private fun displayMap() : String {
+        val topRoomMap = buildRoomMap(gameMap.topRoomList)
+        val bottomRoomMap = buildRoomMap(gameMap.bottomRoomList)
+        val fullMap = "$topRoomMap\n$bottomRoomMap"
+        return fullMap;
+
+    }
+
+    private fun buildRoomMap(roomList : List<Room>) : String{
+        val roomStringBuilder = StringBuilder()
+        roomList.forEach { room ->
+            if (currentRoom.name.equals(room.name)){
+                roomStringBuilder.append("X ")
+            } else {
+                roomStringBuilder.append("O ")
+            }
+        }
+        return roomStringBuilder.toString()
     }
 }
