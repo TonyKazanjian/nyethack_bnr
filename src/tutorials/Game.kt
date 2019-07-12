@@ -1,6 +1,7 @@
 package tutorials
 
 import challenges.GameMap
+import kotlin.system.exitProcess
 
 /**
  * Created by tonykazanjian on 2/2/19.
@@ -46,6 +47,27 @@ object Game {
                 "Invalid direction: $directionInput"
             }
 
+    private fun fight() = currentRoom.monster?.let {
+        while(player.healthPoints > 0 && it.healthPoints > 0) {
+            slay(it)
+            Thread.sleep(1000)
+        }
+
+        "Combat complete."
+    } ?: "There's nothing here to fight"
+
+    private fun slay(monster: Monster){
+        println("${monster.name} did ${monster.attack(player)} damage!")
+        println("${player.name} did ${player.attack(monster)} damage!")
+        if (player.healthPoints <= 0) {
+            println(">>>> You have been defeated! Thanks for playing. <<<<")
+            exitProcess(0)
+        }
+        if (monster.healthPoints <= 0) {
+            println(">>>> ${monster.name} has been defeated! <<<<")
+            currentRoom.monster = null
+        }
+    }
 
     init {
         println("Welcome, adventurer.")
@@ -80,6 +102,7 @@ object Game {
         fun processCommand() = when (command.toLowerCase()) {
             "move" -> move(argument)
             "map" -> displayMap()
+            "fight" -> fight()
             "quit" -> quitGame()
             "ring" -> ringTownSquareBell(currentRoom)
             else -> commandNotFound()

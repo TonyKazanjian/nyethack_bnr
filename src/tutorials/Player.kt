@@ -5,9 +5,9 @@ import java.io.File
 /**
  * Created by tonykazanjian on 5/21/19.
  */
-class Player (_name: String, var healthPoints: Int = 100,
+class Player (_name: String, override var healthPoints: Int = 100,
               var isBlessed: Boolean,
-              private val isImmortal: Boolean) {
+              private val isImmortal: Boolean) : Fightable {
     var name = _name
         get() = "${field.capitalize()} of $hometown"
         private set(value) {
@@ -66,4 +66,17 @@ class Player (_name: String, var healthPoints: Int = 100,
                 else -> "is in awful condition"
             }
 
+    override val diceCount = 3
+
+    override val diceSides = 6
+
+    override fun attack(opponent: Fightable): Int {
+        val damageDealt = if (isBlessed) {
+            damageRoll * 2
+        } else {
+            damageRoll
+        }
+        opponent.healthPoints -= damageDealt
+        return damageDealt
+    }
 }
