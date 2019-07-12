@@ -1,5 +1,7 @@
 package tutorials
 
+import challenges.GameMap
+
 /**
  * Created by tonykazanjian on 2/2/19.
  */
@@ -15,13 +17,12 @@ object Game {
 
     var inSession = true
     val player = Player("Tony")
-    var currentRoom: Room =  TownSquare()
-    val topRoomList = listOf<Room>(currentRoom, Room("Tavern"), Room("Back Room"))
-    val bottomRoomList = listOf<Room>(Room("Long Corridor"), Room ("Generic Room"))
+    val gameMap = GameMap()
+    var currentRoom: Room
 
-    private var worldMap = listOf(
-            topRoomList,
-            bottomRoomList)
+    init {
+        currentRoom = gameMap.currentRoom
+    }
 
     private fun quitGame() : String {
         inSession = false;
@@ -37,7 +38,7 @@ object Game {
                     throw IllegalStateException("$direction is out of bounds.")
                 }
 
-                val newRoom = worldMap[newPosition.y][newPosition.x]
+                val newRoom = gameMap.worldMap[newPosition.y][newPosition.x]
                 player.currentPosition = newPosition
                 currentRoom = newRoom
                 "Ok, you move $direction to the ${newRoom.name}.\n${newRoom.load()}"
@@ -98,8 +99,8 @@ object Game {
     }
 
     private fun displayMap() : String {
-        val topRoomMap = buildRoomMap(topRoomList)
-        val bottomRoomMap = buildRoomMap(bottomRoomList)
+        val topRoomMap = buildRoomMap(gameMap.topRoomList)
+        val bottomRoomMap = buildRoomMap(gameMap.bottomRoomList)
         val fullMap = "$topRoomMap\n$bottomRoomMap"
         return fullMap;
 
